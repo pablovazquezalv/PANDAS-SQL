@@ -16,8 +16,6 @@ class Conexion:
         mycursor = self.mydb.cursor()
         mycursor.execute(script)
        
-       
-    
     def execute_query(self,query):
         mycursor = self.mydb.cursor()
         mycursor.execute(query)

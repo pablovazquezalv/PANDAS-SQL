@@ -57,14 +57,11 @@ df_maximos = df_maximos.drop(columns=['MaxValor'])
 # Imprimir el resultado
 by_year = df_maximos.sort_values(['AÑO','RegionDescription'])
 
-print("**************************")
-print("CONSULTA 2")
+
 print(by_year)  
 by_year.to_csv('consulta1.csv', index=False)
 
 # Consulta 2
-
-df_2 = pd.DataFrame(myresult, columns=column_names)
 
 
 
