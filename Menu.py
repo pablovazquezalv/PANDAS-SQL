@@ -19,4 +19,9 @@ class Menu:
       opcion = input("Opción: ")
       return opcion
 
+   def menuPubs(self):
+      print("Selecciona una opción")
+      print("1-Consulta 1")
+      opcion = input("Opción: ")
+      return opcion
     

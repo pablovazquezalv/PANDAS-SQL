@@ -1,6 +1,7 @@
 from Conexion import Conexion
 from Metodos import Metodos
 from Menu import Menu
+import pandas as pd
 if __name__ == '__main__':
     
     conexion = Conexion()
@@ -15,7 +16,7 @@ if __name__ == '__main__':
             txt = open("nortwind.txt", "r")
             df = conexion.execute_query(txt.read())
             metodos = Metodos(df)
-
+            metodos.generarCSV(df, 'northwind.csv')
             opcion_n = menu.menuNorthwind()
             if opcion_n == '1':
                 df = metodos.agruparSumar('AÑO', 'RegionDescription', 'CompanyName')
@@ -25,42 +26,54 @@ if __name__ == '__main__':
                 df = df.pivot(index='AÑO', columns='RegionDescription', values='CompanyName')
                 df = df.reset_index()
                 print("CONSULTA 1 NORTHWIND")
-                print("*** EMPRESAS CON MAYOR VENTA POR AÑO Y REGION ***")
+                print("*** los clientes que mas ganancia obtuvieron por año, y región ***")
                 print(df)
                 metodos.generarCSV(df, 'maximos.csv')  
 
             elif opcion_n == '2':
-                pass
+                print("**Ganancias por Región**")
+            
+                df = metodos.agruparSuma(df)
+                print(df)
+
+                metodos.generarCSV(df, 'maximos3.csv')
+
             elif opcion_n == '3':
                 #agrupar las categorias
-                df = metodos.agruparSumar('AÑO','CategoryName', 'ProductName', 'CompanyName')
-                metodos.generarCSV(df, 'agrupado.csv')
+                df = metodos.agruparSumar('AÑO', 'CategoryName', 'ProductName', 'CompanyName')
+
+                metodos.generarCSV(df, 'maximos2.csv')
+                #filtrar los tres ultimos años
+                
+
                 #eliminar columnas
                 df = metodos.eliminarColumnas(df, ['RegionDescription'])
-                #obtener el maximo de cada categoria y minimo de cada categoria
-                df = metodos.agruparMaximo(df, 'AÑO', 'CategoryName')
 
+                #obtener el producto mas vendido
+                df = metodos.productoMasVendido(df, 'AÑO', 'CategoryName')
 
-
-                #generar csv
-                #print("CONSULTA 3 NORTHWIND")
-                #print("*** EMPRESAS CON MAYOR Y MENOR VENTA POR CATEGORIA Y AÑO ***")
-                #print(df)
-
-
-
-                df = metodos.generarCSV(df, 'maximos_categoria.csv')
-
-                
-               
-
+                metodos.generarCSV(df, 'maximos2.csv')  
                 pass
             elif opcion_n == '4':
                 break
             else:
                 print("Opción no válida")
-            
-
+        
+       elif opcion == '2':
+           while True:
+               bd = conexion.use_database("USE pubs")
+               txt = open("pubs.txt", "r")
+               df = conexion.execute_query(txt.read())
+               metodos = Metodos(df)
+               opcion_n = menu.menuPubs()
+               if opcion_n == '1':
+                   df = conexion.execute_query(txt.read())
+                   metodos = Metodos(df)
+                   metodos.generarCSV(df, 'northwind.csv')
+                   
+               elif opcion_n == '2':
+                   pass
+              
     
     
     

@@ -6,10 +6,15 @@ class Metodos:
         self.df = df
    
 
-   def agruparSumar(self,*columns):
+   def agruparSumar(self,df,*columns):
         if not columns:
             raise ValueError("Debes proporcionar al menos una columna para agrupar.")
-        return self.df.groupby(list(columns)).sum().reset_index()
+        return df.groupby(list(columns)).sum().reset_index()
+
+
+   def agruparSuma(self,df):
+          df = df.groupby('RegionDescription')['CANTIDAD'].sum().reset_index()
+          return df
 
 
    def agruparMaximo(self, df, *columns):
@@ -38,34 +43,34 @@ class Metodos:
         return df.drop(columns, axis=1)
    
    def productoMasVendido(self, df, *columns):
-        if 'CANTIDAD' not in df.columns or 'CompanyName' not in df.columns:
-            raise ValueError("El dataframe debe contener las columnas 'CANTIDAD' y 'CompanyName'.")
-        
-        # Calcula el máximo por grupo y agrega la columna 'MaxValor'
-        df['MaxValor'] = df.groupby(list(columns))['CANTIDAD'].transform('max')
-        
-        # Filtra las filas que contienen el máximo valor por grupo
-        df_maximos = df[df['CANTIDAD'] == df['MaxValor']]
-        
-        # Elimina la columna 'MaxValor'
-        df_maximos = df_maximos.drop(columns=['MaxValor'])
-        
-        # Devolver solo las columnas relevantes
-        return df_maximos
+               if 'CANTIDAD' not in df.columns or 'CompanyName' not in df.columns:
+                raise ValueError("El dataframe debe contener las columnas 'CANTIDAD' y 'CompanyName'.")
+               
+               # Calcula el máximo por grupo y agrega la columna 'MaxValor'
+               df['MaxValor'] = df.groupby(list(columns))['CANTIDAD'].transform('max')
+               
+               # Filtra las filas que contienen el máximo valor por grupo
+               df_maximos = df[df['CANTIDAD'] == df['MaxValor']]
+               
+               # Elimina la columna 'MaxValor'
+               df_maximos = df_maximos.drop(columns=['MaxValor'])
+               
+               # Devolver solo las columnas relevantes
+               return df_maximos
 
    def productoMenosVendido(self, df, *columns):
-          if 'CANTIDAD' not in df.columns or 'CompanyName' not in df.columns:
+            if 'CANTIDAD' not in df.columns or 'CompanyName' not in df.columns:
                raise ValueError("El dataframe debe contener las columnas 'CANTIDAD' y 'CompanyName'.")
-          
-          # Calcula el mínimo por grupo y agrega la columna 'MinValor'
-          df['MinValor'] = df.groupby(list(columns))['CANTIDAD'].transform('min')
-          
-          # Filtra las filas que contienen el mínimo valor por grupo
-          df_minimos = df[df['CANTIDAD'] == df['MinValor']]
-          
-          # Elimina la columna 'MinValor'
-          df_minimos = df_minimos.drop(columns=['MinValor'])
-          
-          # Devolver solo las columnas relevantes
-          return df_minimos
+            
+            # Calcula el mínimo por grupo y agrega la columna 'MinValor'
+            df['MinValor'] = df.groupby(list(columns))['CANTIDAD'].transform('min')
+            
+            # Filtra las filas que contienen el mínimo valor por grupo
+            df_minimos = df[df['CANTIDAD'] == df['MinValor']]
+            
+            # Elimina la columna 'MinValor'
+            df_minimos = df_minimos.drop(columns=['MinValor'])
+            
+            # Devolver solo las columnas relevantes
+            return df_minimos
      
