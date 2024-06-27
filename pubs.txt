@@ -1,10 +1,10 @@
-SELECT DISTINCT titles.title_id,titles.title,SUM(titles.price * sales.qty * (100 - COALESCE(TB1.total_royalty, 0)) / 100) AS ganaciasA
-FROM sales INNER JOIN titles ON sales.title_id = titles.title_id
-LEFT JOIN (
-SELECT titleauthor.title_id,SUM(titleauthor.royaltyper) AS total_royalty FROM titleauthor
-GROUP BY titleauthor.title_id
-) AS TB1 
-ON titles.title_id = TB1.title_id
-GROUP BY titles.title_id 
-HAVING ganaciasA != 0.0
-ORDER BY ganaciasA;
+SELECT 
+    authors.au_lname,
+    titles.title_id,
+    titles.title,
+  titles.price ,sales.qty ,titleauthor.royaltyper
+FROM titles 
+LEFT JOIN sales ON titles.title_id = sales.title_id
+LEFT JOIN titleauthor ON titles.title_id = titleauthor.title_id
+LEFT JOIN authors ON titleauthor.au_id = authors.au_id
+ORDER BY  titles.title_id

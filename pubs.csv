@@ -1,0 +1,26 @@
+au_lname,title_id,title,price,qty,royaltyper
+Bennet,BU1032,The Busy Executive's Database Guide,19.99,,60.0
+O'Leary,BU1111,Cooking with Computers: Surreptitious Balance Sheets,11.95,25.0,40.0
+Green,BU2075,You Can Combat Computer Stress!,2.99,,100.0
+Straight,BU7832,Straight Talk About Computers,19.99,15.0,100.0
+del Castillo,MC2222,Silicon Valley Gastronomic Treats,19.99,,100.0
+DeFrance,MC3021,The Gourmet Microwave,2.99,15.0,75.0
+Ringer,MC3021,The Gourmet Microwave,2.99,15.0,25.0
+Carson,PC1035,But Is It User Friendly?,22.95,,100.0
+Dull,PC8888,Secrets of Silicon Valley,20.00,50.0,50.0
+Hunter,PC8888,Secrets of Silicon Valley,20.00,50.0,50.0
+Locksley,PC9999,Computer ,21.59,,100.0
+MacFeather,PS1372,Computer Phobic AND Non-Phobic Individuals: Behavior Variations,21.59,,25.0
+Karsen,PS1372,Computer Phobic AND Non-Phobic Individuals: Behavior Variations,21.59,,75.0
+Ringer,PS2091,Is Anger the Enemy?,10.95,3.0,50.0
+Ringer,PS2091,Is Anger the Enemy?,10.95,75.0,50.0
+Ringer,PS2091,Is Anger the Enemy?,10.95,10.0,50.0
+Ringer,PS2091,Is Anger the Enemy?,10.95,20.0,50.0
+,PS2106,Life Without Fear,7.00,,
+White,PS3333,Prolonged Data Deprivation: Four Case Studies,19.99,,100.0
+,PS7777,Emotional Security: A New Algorithm,7.99,25.0,
+Panteley,TC3218,"Onions, Leeks, and Garlic: Cooking Secrets of the Mediterranean",20.95,40.0,100.0
+Blotchet-Halls,TC4203,Fifty Years in Buckingham Palace Kitchens,11.95,,100.0
+O'Leary,TC7777,"Sushi, Anyone?",14.99,,30.0
+Gringlesby,TC7777,"Sushi, Anyone?",14.99,,30.0
+Yokomoto,TC7777,"Sushi, Anyone?",14.99,,40.0

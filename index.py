@@ -31,12 +31,13 @@ if __name__ == '__main__':
                 metodos.generarCSV(df, 'maximos.csv')  
 
             elif opcion_n == '2':
+                print("CONSULTA 2 NORTHWIND")
                 print("**Ganancias por Región**")
-            
+
                 df = metodos.agruparSuma(df)
                 print(df)
 
-                metodos.generarCSV(df, 'maximos3.csv')
+                metodos.generarCSV(df, 'ganaciasxregion.csv')
 
             elif opcion_n == '3':
                 #agrupar las categorias
@@ -63,13 +64,18 @@ if __name__ == '__main__':
            while True:
                bd = conexion.use_database("USE pubs")
                txt = open("pubs.txt", "r")
-               df = conexion.execute_query(txt.read())
+               query = "SELECT  authors.au_lname,    titles.title_id,    titles.title,  titles.price ,sales.qty ,titleauthor.royaltyper FROM titles LEFT JOIN sales ON titles.title_id = sales.title_id LEFT JOIN titleauthor ON titles.title_id = titleauthor.title_id LEFT JOIN authors ON titleauthor.au_id = authors.au_id ORDER BY  titles.title_id"
+               df = conexion.execute_query(query)
                metodos = Metodos(df)
                opcion_n = menu.menuPubs()
                if opcion_n == '1':
                    df = conexion.execute_query(txt.read())
                    metodos = Metodos(df)
-                   metodos.generarCSV(df, 'northwind.csv')
+                   #agrupar por autor
+                   df = metodos.agruparSumar('au_lname', 'title', 'price', 'qty', 'royaltyper')
+
+
+                   metodos.generarCSV(df, 'pubs.csv')
                    
                elif opcion_n == '2':
                    pass
