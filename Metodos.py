@@ -62,15 +62,18 @@ class Metodos:
             if 'CANTIDAD' not in df.columns or 'CompanyName' not in df.columns:
                raise ValueError("El dataframe debe contener las columnas 'CANTIDAD' y 'CompanyName'.")
             
-            # Calcula el mínimo por grupo y agrega la columna 'MinValor'
+               # Calcula el mínimo por grupo y agrega la columna 'MinValor'
             df['MinValor'] = df.groupby(list(columns))['CANTIDAD'].transform('min')
-            
-            # Filtra las filas que contienen el mínimo valor por grupo
+
+               # Filtra las filas que contienen el mínimo valor por grupo
             df_minimos = df[df['CANTIDAD'] == df['MinValor']]
-            
-            # Elimina la columna 'MinValor'
+
+               # Elimina la columna 'MinValor'
             df_minimos = df_minimos.drop(columns=['MinValor'])
-            
-            # Devolver solo las columnas relevantes
+
+               # Devolver solo las columnas relevantes
             return df_minimos
      
+   def base(self,df):
+         grouped_df = df.groupby('au_id').agg({'TotalSales': 'sum'}).reset_index()
+         return grouped_df

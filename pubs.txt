@@ -1,10 +1,20 @@
-SELECT 
-    authors.au_lname,
-    titles.title_id,
-    titles.title,
-  titles.price ,sales.qty ,titleauthor.royaltyper
+SELECT titles.title_id,TB1.au_id, SUM(titles.price * sales.qty * TB1.royaltyper / 100) AS TotalSales
 FROM titles 
-LEFT JOIN sales ON titles.title_id = sales.title_id
-LEFT JOIN titleauthor ON titles.title_id = titleauthor.title_id
-LEFT JOIN authors ON titleauthor.au_id = authors.au_id
-ORDER BY  titles.title_id
+INNER JOIN sales ON sales.title_id = titles.title_id INNER JOIN 
+(
+SELECT authors.au_id, titleauthor.title_id, titleauthor.royaltyper 
+FROM authors INNER JOIN titleauthor ON authors.au_id = titleauthor.au_id
+) AS TB1
+ON TB1.title_id = titles.title_id
+GROUP BY TB1.au_id,titles.title_id
+UNION 
+SELECT DISTINCT titles.title_id, 'Anónimo' AS Autor,SUM(titles.price * sales.qty * (100 - COALESCE(TB1.total_royalty, 0)) / 100) AS TotalSales
+FROM sales 
+INNER JOIN titles ON sales.title_id = titles.title_id
+LEFT JOIN (
+    SELECT title_id, SUM(royaltyper) AS total_royalty 
+    FROM titleauthor 
+    GROUP BY title_id
+) AS TB1 ON titles.title_id = TB1.title_id
+GROUP BY titles.title_id 
+ORDER BY TotalSales;

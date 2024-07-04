@@ -1,0 +1,35 @@
+SELECT 
+    CompanyName, 
+    CategoryName, 
+    ProductName, 
+    YEAR(OrderDate) AS year, 
+    SUM(OD.UnitPrice * OD.Quantity) AS ventas, 
+    TRIM(RegionDescription) AS RegionDescription 
+FROM 
+    `order details` AS OD 
+JOIN 
+    products USING(ProductID) 
+JOIN 
+    orders USING(OrderID) 
+JOIN 
+    customers AS c USING(CustomerID) 
+JOIN 
+    categories USING(CategoryID) 
+JOIN 
+    (
+        SELECT DISTINCT 
+            RegionDescription, 
+            EmployeeID 
+        FROM 
+            territories 
+        JOIN 
+            employeeterritories USING(TerritoryID) 
+        JOIN 
+            region USING(RegionID)
+    ) AS x USING(EmployeeID) 
+GROUP BY 
+    year, 
+    RegionDescription, 
+    CategoryName, 
+    CompanyName, 
+    ProductName;
