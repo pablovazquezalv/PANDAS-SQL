@@ -41,27 +41,9 @@ if __name__ == '__main__':
                 metodos.generarCSV(df, 'ganaciasxregion.csv')
 
             elif opcion_n == '3':
-                #agrupar las categorias
-              df_ultimos_3_anos = df[df['AÑO'] >= df['AÑO'].max() - 2]
-
-              print("CONSULTA 3 NORTHWIND AÑOS")
-              print(df_ultimos_3_anos)
-
-                # Agrupar por año, categoría, producto y compañía, sumando las cantidades
-              df_grouped = df_ultimos_3_anos.groupby(['AÑO', 'CategoryName', 'ProductName', 'CompanyName'])['CANTIDAD'].sum().reset_index()
-
-                # Ordenar por año, categoría y cantidad de manera descendente
-              df_grouped = df_grouped.sort_values(['AÑO', 'CategoryName', 'CANTIDAD'], ascending=[True, True, False])
-
-                # Obtener el producto más vendido por año y categoría
-              producto_mas_vendido_por_anio_categoria = df_grouped.drop_duplicates(['AÑO', 'CategoryName'])
-
-              print(producto_mas_vendido_por_anio_categoria)
-              metodos2.generarCSV(producto_mas_vendido_por_anio_categoria, 'producto_mas_vendido_por_anio_categoria.csv')
-           
-
+             
             # Filtrar los datos de los últimos 3 años
-              df_ultimos_3 = df2[df2['AÑO'] >= df2['AÑO'].max() - 2]
+              df_ultimos_3 = df[df['AÑO'] >= df['AÑO'].max() - 2]
 
               print("CONSULTA 3 NORTHWIND AÑOS")
               print(df_ultimos_3)
@@ -76,62 +58,57 @@ if __name__ == '__main__':
               producto_mas_vendido = df_group.drop_duplicates(['AÑO', 'CategoryName'])
 
               print(producto_mas_vendido)
-              metodos.generarCSV(producto_mas_vendido, 'producto_mas_vendido_por_anio_categoria.csv')
+              metodos.generarCSV(producto_mas_vendido, 'producto_mas_vendido.csv')
 
-            # Ordenar por año, categoría y cantidad de manera ascendente para encontrar el cliente que menos compró
-              df_grouped_min = df_group.sort_values(['AÑO', 'CategoryName', 'CANTIDAD'], ascending=[True, True, True])
+              #en el df2 que es la copia de df,buscar los productos menos vendidos por año y categoría que sean los mismos que los más vendidos
+              df2 = df2[df2['AÑO'] >= df2['AÑO'].max() - 2]
 
-            # Obtener el cliente que menos compró por año y categoría
-              cliente_menos_compro_por_anio_categoria = df_grouped_min.drop_duplicates(['AÑO', 'CategoryName'])
+# Obtener los productos menos vendidos que coinciden con los más vendidos
+              productos_menos_vendidos = df2.merge(producto_mas_vendido[['AÑO', 'CategoryName', 'ProductName']], on=['AÑO', 'CategoryName', 'ProductName'], how='inner')
+              productos_menos_vendidos = productos_menos_vendidos.groupby(['AÑO', 'CategoryName', 'ProductName', 'CompanyName'])['CANTIDAD'].sum().reset_index()
+              productos_menos_vendidos = productos_menos_vendidos.sort_values(['AÑO', 'CategoryName', 'CANTIDAD'], ascending=[True, True, True])
 
-              print(cliente_menos_compro_por_anio_categoria)
-              metodos.generarCSV(cliente_menos_compro_por_anio_categoria, 'cliente_menos_compro_por_anio_categoria.csv')
+             
+              print("\nProductos menos vendidos por año y categoría:")
+              print(productos_menos_vendidos)
+              metodos.generarCSV(productos_menos_vendidos, 'productos_menos_vendidos.csv')
+              ###########
+              df_grouped = productos_menos_vendidos.groupby(['AÑO', 'CategoryName','ProductName']).agg({
+    'CANTIDAD': ['max', 'min']
+}).reset_index()
+
+# Renombrar las columnas para claridad
+              df_grouped.columns = ['AÑO', 'CategoryName', 'ProductName', 'Max_CANTIDAD', 'Min_CANTIDAD']
+
+                # Unir con el DataFrame original para obtener los clientes que corresponden a los valores máximos
+              df_max = pd.merge(df_grouped[['AÑO', 'CategoryName', 'ProductName', 'Max_CANTIDAD']], productos_menos_vendidos, 
+                                left_on=['AÑO', 'CategoryName', 'ProductName', 'Max_CANTIDAD'], 
+                                right_on=['AÑO', 'CategoryName', 'ProductName', 'CANTIDAD']).drop_duplicates()
+
+                # Unir con el DataFrame original para obtener los clientes que corresponden a los valores mínimos
+              df_min = pd.merge(df_grouped[['AÑO', 'CategoryName', 'ProductName', 'Min_CANTIDAD']], productos_menos_vendidos, 
+                                left_on=['AÑO', 'CategoryName', 'ProductName', 'Min_CANTIDAD'], 
+                                right_on=['AÑO', 'CategoryName', 'ProductName', 'CANTIDAD']).drop_duplicates()
+
+                # Renombrar las columnas para claridad
+              df_max.rename(columns={'CompanyName': 'Max_CompanyName'}, inplace=True)
+              df_min.rename(columns={'CompanyName': 'Min_CompanyName'}, inplace=True)
+
+                # Unir los DataFrames de valores máximos y mínimos
+              df_grouped = pd.merge(df_max, df_min, on=['AÑO', 'CategoryName', 'ProductName'])
+
+              print("Máximo y mínimo de CANTIDAD por AÑO y CategoryName, y los clientes correspondientes:")
+              print(df_grouped)
+              metodos.generarCSV(df_grouped, 'max_min_cantidad.csv')
+
+              df_grouped['Info'] = df_grouped['ProductName'] + ', ' + df_grouped['Max_CompanyName'] + ' ' + df_grouped['Max_CANTIDAD'].astype(str) + ', ' + df_grouped['Min_CompanyName'] + ' ' + df_grouped['Min_CANTIDAD'].astype(str)
+
+                # Reorganizar los datos con pivot_table()
+              df_pivot = df_grouped.pivot_table(index='CategoryName', columns='AÑO', values='Info', aggfunc='first')
+
+              print(df_pivot)
+              metodos.generarCSV(df_pivot.reset_index(), 'pivot_table.csv')
               
-              matriz_datos = {}
-
-                # Obtener las categorías únicas
-              categorias = producto_mas_vendido_por_anio_categoria['CategoryName'].unique()
-
-                # Iterar sobre cada categoría
-              for categoria in categorias:
-                    matriz_datos[categoria] = {}
-                    
-                    # Filtrar los datos por categoría
-                    df_prod_mas_vendido = producto_mas_vendido_por_anio_categoria[producto_mas_vendido_por_anio_categoria['CategoryName'] == categoria]
-                    df_cli_menos_compro = cliente_menos_compro_por_anio_categoria[cliente_menos_compro_por_anio_categoria['CategoryName'] == categoria]
-                    
-                    # Obtener los años únicos ordenados
-                    anos_unicos = sorted(df_prod_mas_vendido['AÑO'].unique(), reverse=True)[:3]
-                    
-                    # Iterar sobre los años
-                    for idx, ano in enumerate(anos_unicos):
-                        matriz_datos[categoria][f"Año_{idx + 1}"] = {}
-                        
-                        # Filtrar datos por año y obtener productos más vendidos y menos comprados
-                        df_prod_vendido_ano = df_prod_mas_vendido[df_prod_mas_vendido['AÑO'] == ano].reset_index(drop=True)
-                        df_cli_menos_ano = df_cli_menos_compro[df_cli_menos_compro['AÑO'] == ano].reset_index(drop=True)
-                        
-                        if not df_prod_vendido_ano.empty:
-                            producto_mas_vendido = {
-                                'Producto': df_prod_vendido_ano.iloc[0]['ProductName'],
-                                'Cliente que más compró': df_prod_vendido_ano.iloc[0]['CompanyName'],
-                                'Cantidad': df_prod_vendido_ano.iloc[0]['CANTIDAD']
-                            }
-                            matriz_datos[categoria][f"Año_{idx + 1}"]['Producto más vendido'] = producto_mas_vendido
-                        
-                        if not df_cli_menos_ano.empty:
-                            cliente_menos_compro = {
-                                'Producto': df_cli_menos_ano.iloc[0]['ProductName'],
-                                'Cliente que menos compró': df_cli_menos_ano.iloc[0]['CompanyName'],
-                                'Cantidad': df_cli_menos_ano.iloc[0]['CANTIDAD']
-                            }
-                            matriz_datos[categoria][f"Año_{idx + 1}"]['Cliente menos compró'] = cliente_menos_compro
-
-                # Convertir el diccionario en un DataFrame para visualización o exportación
-                        df_matriz = pd.DataFrame([(categoria, datos) for categoria, datos in matriz_datos.items()], columns=['CategoryName', 'Datos'])
-
-                        print(df_matriz)
-                        metodos.generarCSV(df_matriz, 'matriz.csv')
             elif opcion_n == '4':
             
                 break
